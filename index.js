@@ -3,6 +3,7 @@ const express=require("express");
 const {connectMongoDb}=require('./connection'); // function from connection file to connect database
 require('dotenv').config();
 const testuser= require('./models/testusers');
+const user=require('./models/users');
 const UserRouter= require('./routes/user');
 
 const app=express();
