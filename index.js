@@ -23,8 +23,6 @@ connectMongoDb(MONGO_URI) ; // calling the function to connect database
 //routes
 app.use("/users",UserRouter)
 
-console.log("Hello")
-console.log("Hello")
 
 
 app.listen(port, () => {
