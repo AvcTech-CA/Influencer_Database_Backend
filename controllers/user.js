@@ -1,5 +1,5 @@
-const Users = require('../models/testusers');
-
+const Users = require('../models/users');
+  
 
 async function handleGetAllusers(req, res) {
     try{
@@ -13,4 +13,36 @@ async function handleGetAllusers(req, res) {
       }
 }
 
-module.exports={handleGetAllusers};
+
+async function handleUserSignup(req, res) {
+    try {
+        // Debugging: Log request body
+        console.log(req.body);
+
+        // Destructure request body
+        const { firstName, lastName, email, companyName, password } = req.body;
+
+        // Check if all required fields are present
+        if (!firstName || !lastName || !email || !companyName || !password) {
+            return res.status(400).json({ error: "All fields are required" });
+        }
+
+        // Create user
+        const newUser = await Users.create({
+            firstName,
+            lastName,
+            email,
+            companyName,
+            password
+        });
+
+        // Return the created user
+        return res.status(201).json({ message: "User created successfully!", user: newUser });
+
+    } catch (error) {
+        console.error("Error in handleUserSignup:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+module.exports={handleGetAllusers,handleUserSignup};
