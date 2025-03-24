@@ -23,7 +23,7 @@ connectMongoDb(MONGO_URI) ; // calling the function to connect database
 //routes
 app.use("/users",UserRouter)
 
-
+console.log("Hello")
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
