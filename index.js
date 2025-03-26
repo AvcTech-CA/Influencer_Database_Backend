@@ -4,7 +4,9 @@ const {connectMongoDb}=require('./connection'); // function from connection file
 require('dotenv').config();
 const testuser= require('./models/testusers');
 const user=require('./models/users');
+const  adminUser=require('./models/adminUsers');
 const UserRouter= require('./routes/user');
+const AdminRouter=require('./routes/adminUser');
 const cors = require("cors");
 const app=express();
 app.use(express.json());
@@ -22,8 +24,8 @@ connectMongoDb(MONGO_URI) ; // calling the function to connect database
 
 //routes
 app.use("/users",UserRouter)
+app.use("/admin",AdminRouter)
 
-console.log("Hello")
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);

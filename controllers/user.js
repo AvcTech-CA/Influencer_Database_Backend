@@ -21,17 +21,23 @@ async function handleUserSignup(req, res) {
 
         // Destructure request body
         const { firstName, lastName, email, companyName, password } = req.body;
+        const normalizedEmail = email.trim().toLowerCase();
+      
+        console.log(normalizedEmail)
 
-        // Check if all required fields are present
-        if (!firstName || !lastName || !email || !companyName || !password) {
-            return res.status(400).json({ error: "All fields are required" });
+           // Check if the email already exists in the database
+           const existingUser = await Users.findOne({email});
+           console.log(existingUser);
+
+        if (existingUser) {
+            return res.status(400).json({ error: "User already exists" });
         }
 
         // Create user
         const newUser = await Users.create({
             firstName,
             lastName,
-            email,
+            email: normalizedEmail,
             companyName,
             password
         });
@@ -41,8 +47,39 @@ async function handleUserSignup(req, res) {
 
     } catch (error) {
         console.error("Error in handleUserSignup:", error);
+
+        // Check for unique constraint violation
+        if (error.name === "SequelizeUniqueConstraintError") {
+            return res.status(400).json({ error: "User with this email already exists" });
+        }
+
         return res.status(500).json({ error: "Internal Server Error" });
     }
 }
 
-module.exports={handleGetAllusers,handleUserSignup};
+
+async function handleUserLogin(req, res) {
+    try {
+        const { email, password } = req.body;
+
+        // Find user by email
+        const authUser = await Users.findOne({ email, password });
+
+        if (!authUser) {
+            return res.status(400).json({ message: "User not found" });
+        }
+
+        console.log(authUser);
+
+        // Send a success response (you might want to generate a JWT token here)
+        res.status(200).json({ message: "Login successful", user: authUser });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
+
+
+module.exports={handleGetAllusers,handleUserSignup, handleUserLogin};
