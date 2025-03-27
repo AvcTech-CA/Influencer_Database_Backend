@@ -1,5 +1,9 @@
 const Users = require('../models/users');
-  
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+
+require('dotenv').config();
+const SECRET_KEY =process.env.SECRET_KEY
 
 async function handleGetAllusers(req, res) {
     try{
@@ -71,8 +75,16 @@ async function handleUserLogin(req, res) {
 
         console.log(authUser);
 
+        const token = jwt.sign(
+            { userId: authUser._id, email: authUser.email, firstName: authUser.firstName, lastName: authUser.lastName }, // You can add more fields if necessary
+            SECRET_KEY,
+            { expiresIn: "1h" } // Token expires in 1 hour
+        );
+
+        
+
         // Send a success response (you might want to generate a JWT token here)
-        res.status(200).json({ message: "Login successful", user: authUser });
+        res.status(200).json({ message: "Login successful",token, user: { email: authUser.email, userId: authUser._id }  });
 
     } catch (error) {
         console.error(error);
@@ -81,5 +93,17 @@ async function handleUserLogin(req, res) {
 }
 
 
+async function getSpecificUser(req,res){
+    try {
+        const user = req.user;
+        console.log(user)
+        if (!user) return res.status(404).json({ message: "User not found" });
+    
+        res.json(user);
+      } catch (error) {
+        res.status(500).json({ message: "Server Error" });
+      }
+}
 
-module.exports={handleGetAllusers,handleUserSignup, handleUserLogin};
+
+module.exports={handleGetAllusers,handleUserSignup, handleUserLogin,getSpecificUser};
