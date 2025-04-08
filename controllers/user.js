@@ -1,9 +1,17 @@
 const Users = require('../models/users');
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const { WebSocketServer } = require("ws");
+const cors = require("cors");
+
+
 
 require('dotenv').config();
 const SECRET_KEY =process.env.SECRET_KEY
+
+const RAPIDAPI_HOST = "real-time-instagram-scraper-api1.p.rapidapi.com"; // Example: "instagram-scraper-api.p.rapidapi.com"
+const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
+
 
 async function handleGetAllusers(req, res) {
     try{
@@ -17,6 +25,33 @@ async function handleGetAllusers(req, res) {
       }
 }
 
+async function handleGetAllInfluencers(req, res) {
+    try {
+        const response = await fetch(`https://${RAPIDAPI_HOST}/v1/user_info?username_or_id=sooyaaa__`, {
+            method: "GET",
+            headers: {
+                "X-RapidAPI-Key": RAPIDAPI_KEY,
+                "X-RapidAPI-Host": RAPIDAPI_HOST
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`API request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Ensure the data contains the expected fields
+        if (!data || Object.keys(data).length === 0) {
+            return res.status(404).json({ message: "No influencer data found" });
+        }
+
+        res.json(data); // Send data as JSON response
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 
 async function handleUserSignup(req, res) {
     try {
@@ -76,7 +111,7 @@ async function handleUserLogin(req, res) {
         console.log(authUser);
 
         const token = jwt.sign(
-            { userId: authUser._id, email: authUser.email, firstName: authUser.firstName, lastName: authUser.lastName }, // You can add more fields if necessary
+            { userId: authUser._id, email: authUser.email, firstName: authUser.firstName, lastName: authUser.lastName, companyName: authUser.companyName }, // You can add more fields if necessary
             SECRET_KEY,
             { expiresIn: "1h" } // Token expires in 1 hour
         );
@@ -106,4 +141,4 @@ async function getSpecificUser(req,res){
 }
 
 
-module.exports={handleGetAllusers,handleUserSignup, handleUserLogin,getSpecificUser};
+module.exports={handleGetAllusers,handleUserSignup, handleUserLogin,getSpecificUser,handleGetAllInfluencers};

@@ -1,11 +1,13 @@
 const express=require("express");
 const router = express.Router();
-const {handleGetAllusers,handleUserSignup, handleUserLogin,getSpecificUser} = require('../controllers/user')
+const {handleGetAllusers,handleUserSignup, handleUserLogin,getSpecificUser,handleGetAllInfluencers} = require('../controllers/user')
 require('dotenv').config();
 const SECRET_KEY =process.env.SECRET_KEY
 const {authenticateUser} = require('../auth')
 
 router.get("/", handleGetAllusers)
+
+router.get("/influencers",handleGetAllInfluencers)
 
 router.post("/signup",handleUserSignup)
 
