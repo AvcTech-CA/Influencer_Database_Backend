@@ -133,6 +133,22 @@ async function handlesetInfluencer(req,res){
 
 }
 
+// const preWarmCache = async () => {
+//     try {
+//       const cached = await redisClient.get("allInfluencers");
+//       if (!cached) {
+//         console.log("Pre-warming Redis cache...");
+//         const influencers = await influencerData.find();
+//         await redisClient.setEx("allInfluencers", CACHE_DURATION, JSON.stringify(influencers));
+//         console.log("Redis cache pre-warmed.");
+//       } else {
+//         console.log("Redis cache already exists. Skipping warm-up.");
+//       }
+//     } catch (err) {
+//       console.error("Error during Redis pre-warm:", err);
+//     }
+//   };
+
 async function handlegetAllInfluencer(req,res){
     try {
         const cachedData = await redisClient.get("allInfluencers");

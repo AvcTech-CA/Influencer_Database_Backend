@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const { WebSocketServer } = require("ws");
 const cors = require("cors");
 
+const multer = require("multer");
 
 
 require('dotenv').config();
@@ -55,39 +56,38 @@ async function handleGetAllInfluencers(req, res) {
 
 async function handleUserSignup(req, res) {
     try {
-        // Debugging: Log request body
-        console.log(req.body);
-
-        // Destructure request body
-        const { firstName, lastName, email, companyName, password } = req.body;
+        // Extract and normalize the email
+        const { firstName, lastName, email, companyName, password,photo } = req.body;
         const normalizedEmail = email.trim().toLowerCase();
-      
-        console.log(normalizedEmail)
 
-           // Check if the email already exists in the database
-           const existingUser = await Users.findOne({email});
-           console.log(existingUser);
-
+        // Convert uploaded photo to base64 if provided
+        const photoBase64 = req.file ? Buffer.from(req.file.buffer).toString("base64") : null;
+        console.log(photoBase64)
+        // Check if the user already exists
+        const existingUser = await Users.findOne({ email: normalizedEmail });
         if (existingUser) {
             return res.status(400).json({ error: "User already exists" });
         }
 
-        // Create user
+        // Create a new user
         const newUser = await Users.create({
             firstName,
             lastName,
             email: normalizedEmail,
             companyName,
-            password
+            password,
+            photo: photoBase64
         });
 
-        // Return the created user
-        return res.status(201).json({ message: "User created successfully!", user: newUser });
+        return res.status(201).json({
+            message: "User created successfully!",
+            user: newUser
+        });
 
     } catch (error) {
         console.error("Error in handleUserSignup:", error);
 
-        // Check for unique constraint violation
+        // Unique constraint handling
         if (error.name === "SequelizeUniqueConstraintError") {
             return res.status(400).json({ error: "User with this email already exists" });
         }
@@ -95,6 +95,7 @@ async function handleUserSignup(req, res) {
         return res.status(500).json({ error: "Internal Server Error" });
     }
 }
+
 
 
 async function handleUserLogin(req, res) {
@@ -111,7 +112,7 @@ async function handleUserLogin(req, res) {
         console.log(authUser);
 
         const token = jwt.sign(
-            { userId: authUser._id, email: authUser.email, firstName: authUser.firstName, lastName: authUser.lastName, companyName: authUser.companyName }, // You can add more fields if necessary
+            { userId: authUser._id, email: authUser.email, firstName: authUser.firstName, lastName: authUser.lastName, companyName: authUser.companyName}, // You can add more fields if necessary
             SECRET_KEY,
             { expiresIn: "1h" } // Token expires in 1 hour
         );
@@ -131,7 +132,6 @@ async function handleUserLogin(req, res) {
 async function getSpecificUser(req,res){
     try {
         const user = req.user;
-        console.log(user)
         if (!user) return res.status(404).json({ message: "User not found" });
     
         res.json(user);
@@ -141,4 +141,26 @@ async function getSpecificUser(req,res){
 }
 
 
-module.exports={handleGetAllusers,handleUserSignup, handleUserLogin,getSpecificUser,handleGetAllInfluencers};
+const getProfilePhotoUrl = async (req, res) => {
+    const { email } = req.query;
+    console.log(email)
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+  
+    try {
+      const user = await Users.findOne({ email });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      res.status(200).json(user.photo); // or send only profilePhoto: res.json({ profilePhoto: user.profilePhoto })
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+  
+
+module.exports={handleGetAllusers,handleUserSignup, handleUserLogin,getSpecificUser,handleGetAllInfluencers,getProfilePhotoUrl};
