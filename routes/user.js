@@ -1,6 +1,6 @@
 const express=require("express");
 const router = express.Router();
-const {handleGetAllusers,handleUserSignup, handleUserLogin,getSpecificUser,handleGetAllInfluencers,getProfilePhotoUrl} = require('../controllers/user')
+const {handleGetAllusers,handleUserSignup, handleUserLogin,getSpecificUser,handleGetAllInfluencers,getProfilePhotoUrl,updateUserinfo} = require('../controllers/user')
 require('dotenv').config();
 const SECRET_KEY =process.env.SECRET_KEY
 const {authenticateUser} = require('../auth')
@@ -9,7 +9,7 @@ const storage=multer.memoryStorage();
 
 const upload = multer({
     storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
     fileFilter: (req, file, cb) => {
         if (!file.mimetype.startsWith("image/")) {
             return cb(new Error("Only image files are allowed!"), false);
@@ -34,5 +34,7 @@ router.post("/logout", (req, res) => {
 });
 
 router.get("/profilePhoto",getProfilePhotoUrl)
+
+router.put("/updateUser",updateUserinfo)
 
 module.exports=router;

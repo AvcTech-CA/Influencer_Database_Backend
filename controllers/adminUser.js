@@ -82,56 +82,66 @@ async function handlegetInstaInfluencer(req, res) {
 }
 
 
-async function handlesetInfluencer(req,res){
-
-   
+async function handlesetInfluencer(req, res) {
     try {
-        const { body } = req;
-        console.log(body);
-        console.log("Received File:", req.file);
-        const photoBase64 = req.file ? Buffer.from(req.file.buffer).toString("base64") : null;
-
-        const newInfluencer = new influencerData({
-          ...body,
-          Photo: photoBase64,
-          Name: body.Name,
-          Username:body.Username,
-          GeoLocation:body.GeoLocation,
-          Ethnicity:body.Ethnicity,
-          Religion:body.Religion,
-          Language:body.Language,
-          FollowerSizeAndTier:body.FollowerSizeAndTier,
-          EngagementRate:body.EngagementRate,
-          FollowerData:body.FollowerData,
-          ProfileDescription:body.ProfileDescription,
-          SocialMediaPlatformLinks: body.SocialMediaPlatformLinks?.split(","),
-          CostRange:body.CostRange,
-          ContentNiche:body.ContentNiche,
-          AgencyorHandlerName:body.AgencyorHandlerName,
-          EmailAddress:body.EmailAddress,
-          HomeAddress:body.HomeAddress,
-          PhoneNumber:body.PhoneNumber,
-          InternalNotes: body.InternalNotes?.split(","),
-          CampaignNumber:body.CampaignNumber,
-          NameofPastProjects: body.NameofPastProjects?.split(","),
-          AVCBookedRate:body.AVCBookedRate,
-          DeliverablesforPastProjects: body.DeliverablesforPastProjects?.split(","),
-          MonthofAVCPastProjects:body.MonthofAVCPastProjects,
-          YearofAVCPastProjects:body.YearofAVCPastProjects,
-          PostLinksofAVCPastProjects:body.PostLinksofAVCPastProjects,
-          SharedDrivePath:body.SharedDrivePath,
-          OtherBrandsWorkedWith: body.OtherBrandsWorkedWith?.split(","),
-          ContentSampleLinks: body.ContentSampleLinks?.split(","),
-        });
-    
-        await newInfluencer.save();
-        res.status(201).json({ message: "Influencer data saved successfully!" });
-      } catch (error) {
-        console.error("Error saving influencer:", error);
-        res.status(500).json({ error: "Server error" });
-      }
-
-}
+      const { body } = req;
+      console.log(body);
+      console.log("Received File:", req.file);
+  
+      const photoBase64 = req.file ? Buffer.from(req.file.buffer).toString("base64") : null;
+      const splitAndTrim = (input) =>
+        typeof input === "string"
+          ? input.split(",").map((item) => item.trim()).filter(Boolean)
+          : Array.isArray(input)
+          ? input
+          : [];
+      const newInfluencer = new influencerData({
+        ...body,
+        Photo: photoBase64,
+      Name: body.Name,
+      Username: body.Username,
+      GeoLocation: body.GeoLocation,
+      Ethnicity: body.Ethnicity,
+      Religion: body.Religion,
+      Language: body.Language,
+      FollowerSizeAndTier: body.FollowerSizeAndTier,
+      EngagementRate: body.EngagementRate,
+      FollowerData: body.FollowerData,
+      ProfileDescription: body.ProfileDescription,
+      SocialMediaPlatformLinks: splitAndTrim(body.SocialMediaPlatformLinks),
+      CostRange: body.CostRange,
+      ContentNiche: body.ContentNiche,
+      AgencyorHandlerName: body.AgencyorHandlerName,
+      EmailAddress: body.EmailAddress,
+      HomeAddress: body.HomeAddress,
+      PhoneNumber: body.PhoneNumber,
+      InternalNotes: splitAndTrim(body.InternalNotes),
+      CampaignNumber: body.CampaignNumber,
+      NameofPastProjects: splitAndTrim(body.NameofPastProjects),
+      AVCBookedRate: body.AVCBookedRate,
+      DeliverablesforPastProjects: splitAndTrim(body.DeliverablesforPastProjects),
+      MonthofAVCPastProjects: body.MonthofAVCPastProjects,
+      YearofAVCPastProjects: body.YearofAVCPastProjects,
+      PostLinksofAVCPastProjects: body.PostLinksofAVCPastProjects,
+      SharedDrivePath: body.SharedDrivePath,
+      OtherBrandsWorkedWith: splitAndTrim(body.OtherBrandsWorkedWith),
+      ContentSampleLinks: splitAndTrim(body.ContentSampleLinks),
+      });
+  
+      await newInfluencer.save();
+  
+      res.status(201).json({ message: "Influencer data saved successfully!" });
+    } catch (error) {
+      console.error("Error saving influencer:", error.message || error);
+  
+      res.status(500).json({
+        error: true,
+        message: "Failed to save influencer data",
+        details: error.message || "Unexpected server error",
+      });
+    }
+  }
+  
 
 // const preWarmCache = async () => {
 //     try {

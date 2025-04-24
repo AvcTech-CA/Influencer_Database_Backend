@@ -162,5 +162,29 @@ const getProfilePhotoUrl = async (req, res) => {
     }
   };
   
+async function updateUserinfo(req,res){
+    try {
+        const { email, ...updatedData } = req.body;
+        console.log(req.body)
+        if (!email) {
+          return res.status(400).json({ error: 'Email is required.' });
+        }
+    
+        const updatedUser = await Users.findOneAndUpdate(
+          { email: email },
+          updatedData,
+          { new: true }
+        );
+    
+        if (!updatedUser) {
+          return res.status(404).json({ error: 'User with this email not found.' });
+        }
+    
+        res.json({ message: 'User updated successfully!', data: updatedUser });
+      } catch (error) {
+        console.error('Update Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+}
 
-module.exports={handleGetAllusers,handleUserSignup, handleUserLogin,getSpecificUser,handleGetAllInfluencers,getProfilePhotoUrl};
+module.exports={handleGetAllusers,handleUserSignup, handleUserLogin,getSpecificUser,handleGetAllInfluencers,getProfilePhotoUrl,updateUserinfo};
