@@ -126,11 +126,22 @@ async function handlesetInfluencer(req, res) {
       SharedDrivePath: body.SharedDrivePath,
       OtherBrandsWorkedWith: splitAndTrim(body.OtherBrandsWorkedWith),
       ContentSampleLinks: splitAndTrim(body.ContentSampleLinks),
+      CampaignNumber:body.CampaignNumber,
+      NameofPastProjects:splitAndTrim(body.NameofPastProjects),
+      AVCBookedRate:body.AVCBookedRate,
+      DeliverablesforPastProjects:splitAndTrim(body.DeliverablesforPastProjects),
+      MonthofAVCPastProjects:body.MonthofAVCPastProjects,
+      YearofAVCPastProjects:body.YearofAVCPastProjects,
+      PostLinksofAVCPastProjects:body.PostLinksofAVCPastProjects,
+      SharedDrivePath:body.SharedDrivePath,
+      OtherBrandsWorkedWith:splitAndTrim(body.OtherBrandsWorkedWith),
+      ContentSampleLinks:splitAndTrim(body.ContentSampleLinks),
       });
   
       await newInfluencer.save();
   
       res.status(201).json({ message: "Influencer data saved successfully!" });
+      
     } catch (error) {
       console.error("Error saving influencer:", error.message || error);
   
