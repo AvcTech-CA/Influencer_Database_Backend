@@ -170,26 +170,37 @@ async function handlesetInfluencer(req, res) {
 //     }
 //   };
 
-async function handlegetAllInfluencer(req,res){
+// async function handlegetAllInfluencer(req,res){
+//     try {
+//         const cachedData = await redisClient.get("allInfluencers");
+
+//     if (cachedData) {
+//       console.log("Serving influencers from Redis cache");
+//       return res.json(JSON.parse(cachedData));
+//     }
+//     const influencers = await influencerData.find();
+
+//     // Cache the result for 1 hour (60 seconds)
+//     await redisClient.setEx("allInfluencers", 60, JSON.stringify(influencers));
+
+//     console.log("Fetched from DB and cached result");
+//     res.json(influencers);
+//       } catch (error) {
+//         console.error("Error fetching influencers:", error);
+//         res.status(500).json({ error: "Server error" });
+//       }
+//     };
+
+async function handlegetAllInfluencer(req, res) {
     try {
-        const cachedData = await redisClient.get("allInfluencers");
-
-    if (cachedData) {
-      console.log("Serving influencers from Redis cache");
-      return res.json(JSON.parse(cachedData));
+      const influencers = await influencerData.find();
+      console.log("Fetched from DB");
+      res.json(influencers);
+    } catch (error) {
+      console.error("Error fetching influencers:", error);
+      res.status(500).json({ error: "Server error" });
     }
-    const influencers = await influencerData.find();
-
-    // Cache the result for 1 hour (60 seconds)
-    await redisClient.setEx("allInfluencers", 60, JSON.stringify(influencers));
-
-    console.log("Fetched from DB and cached result");
-    res.json(influencers);
-      } catch (error) {
-        console.error("Error fetching influencers:", error);
-        res.status(500).json({ error: "Server error" });
-      }
-    };
+  }
 
 
 module.exports={handleGetAllusers, handleUserLogin,handlegetInstaInfluencer,handlesetInfluencer,handlegetAllInfluencer};
