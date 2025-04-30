@@ -14,7 +14,7 @@ const app=express();
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors({
-  origin: "http://localhost:3000", // Allow only requests from frontend
+  origin: true, // Allow only requests from frontend
   methods: "GET,POST,PUT,DELETE",
   allowedHeaders: "Content-Type,Authorization",
   credentials: true
