@@ -8,9 +8,9 @@ const user = require('../models/users');
 const multer = require("multer");
 const SECRET_KEY =process.env.SECRET_KEY
 const influencerData=require('../models/influencerData')
-const redis = require("redis");
-const redisClient = redis.createClient();
-redisClient.connect();
+// const redis = require("redis");
+// const redisClient = redis.createClient();
+// redisClient.connect();
 
 async function handleGetAllusers(req, res) {
     try{
