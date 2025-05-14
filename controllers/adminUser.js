@@ -7,7 +7,9 @@ const cors = require("cors");
 const user = require('../models/users');
 const multer = require("multer");
 const SECRET_KEY =process.env.SECRET_KEY
-const influencerData=require('../models/influencerData')
+const influencerData=require('../models/influencerData');
+const adminUser = require('../models/adminUsers');
+
 // const redis = require("redis");
 // const redisClient = redis.createClient();
 // redisClient.connect();
@@ -22,6 +24,42 @@ async function handleGetAllusers(req, res) {
         console.error('Error fetching users:', error);
         res.status(500).json({ message: 'Failed to fetch users.' });
       }
+}
+
+async function handlAdminSignup(req,res) {
+  try {
+    // Extract and normalize the email
+    const { email,password} = req.body;
+    const normalizedEmail = email.trim().toLowerCase();
+    console.log(email)
+
+    // Check if the user already exists
+    const existingUser = await adminUser.findOne({ email: normalizedEmail });
+    if (existingUser) {
+        return res.status(400).json({ error: "User already exists" });
+    }
+
+    // Create a new user
+    const newUser = await adminUser.create({
+        email: normalizedEmail,
+        password,
+    });
+
+    return res.status(201).json({
+        message: "User created successfully!",
+        user: newUser
+    });
+
+} catch (error) {
+    console.error("Error in handleUserSignup:", error);
+
+    // Unique constraint handling
+    if (error.name === "SequelizeUniqueConstraintError") {
+        return res.status(400).json({ error: "User with this email already exists" });
+    }
+
+    return res.status(500).json({ error: "Internal Server Error" });
+}
 }
 
 
@@ -203,4 +241,4 @@ async function handlegetAllInfluencer(req, res) {
   }
 
 
-module.exports={handleGetAllusers, handleUserLogin,handlegetInstaInfluencer,handlesetInfluencer,handlegetAllInfluencer};
+module.exports={handleGetAllusers, handleUserLogin,handlegetInstaInfluencer,handlesetInfluencer,handlegetAllInfluencer,handlAdminSignup};
