@@ -1,12 +1,16 @@
 const express=require("express");
 const router = express.Router();
-const {handleGetAllusers, handleUserLogin,handlegetInstaInfluencer,handlesetInfluencer,handlegetAllInfluencer,handlAdminSignup} = require('../controllers/adminUser')
+const {handleGetAllusers, handleUserLogin,handlegetInstaInfluencer,handlesetInfluencer,handlegetAllInfluencer,handlAdminSignup,
+  handleGetengagementrate,handleGetfollowerSize,handleGetfiltercost} = require('../controllers/adminUser')
 const multer = require("multer");
 
 router.get("/allUsers", handleGetAllusers)
 router.post("/signin", handleUserLogin)
 router.get("/instagram/:username",handlegetInstaInfluencer)
 router.post("/signUp",handlAdminSignup)
+router.get("/engagementRates",handleGetengagementrate)
+router.get("/followersizes",handleGetfollowerSize)
+router.get("/filtercosts",handleGetfiltercost)
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {

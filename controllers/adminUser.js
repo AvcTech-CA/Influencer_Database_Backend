@@ -9,7 +9,9 @@ const multer = require("multer");
 const SECRET_KEY =process.env.SECRET_KEY
 const influencerData=require('../models/influencerData');
 const adminUser = require('../models/adminUsers');
-
+const engagementRate=require('../models/engagementRates')
+const followerSize=require('../models/followerSizes')
+const filtercost=require("../models/filtercosts")
 // const redis = require("redis");
 // const redisClient = redis.createClient();
 // redisClient.connect();
@@ -240,5 +242,48 @@ async function handlegetAllInfluencer(req, res) {
     }
   }
 
+//get engagement rates
+async function handleGetengagementrate(req, res) {
+  try{
+      const allEngagementRates = await engagementRate.find();
+      console.log(allEngagementRates)
+      res.status(200).json(allEngagementRates)
+    }
+    catch{
+      console.error('Error fetching engagementrates:', error);
+      res.status(500).json({ message: 'Failed to fetch engagementrates.' });
+    }
+}
 
-module.exports={handleGetAllusers, handleUserLogin,handlegetInstaInfluencer,handlesetInfluencer,handlegetAllInfluencer,handlAdminSignup};
+
+// get followerSizes
+
+async function handleGetfollowerSize(req, res) {
+  try{
+      const allfollowersizes = await followerSize.find();
+      console.log(allfollowersizes)
+      res.status(200).json(allfollowersizes)
+    }
+    catch{
+      console.error('Error fetching allfollowersizes:', error);
+      res.status(500).json({ message: 'Failed to fetch allfollowersizes.' });
+    }
+}
+
+// get filtercosts
+
+async function handleGetfiltercost(req, res) {
+  try{
+      const allfiltercosts = await filtercost.find();
+      console.log(allfiltercosts)
+      res.status(200).json(allfiltercosts)
+    }
+    catch{
+      console.error('Error fetching allfiltercosts:', error);
+      res.status(500).json({ message: 'Failed to fetch allfiltercosts.' });
+    }
+}
+
+
+module.exports={handleGetAllusers, handleUserLogin,handlegetInstaInfluencer,handlesetInfluencer,handlegetAllInfluencer
+  ,handlAdminSignup,handleGetengagementrate,handleGetfollowerSize,handleGetfiltercost};
