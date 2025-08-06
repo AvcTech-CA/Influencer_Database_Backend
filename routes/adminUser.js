@@ -1,7 +1,7 @@
 const express=require("express");
 const router = express.Router();
 const {handleGetAllusers, handleUserLogin,handlegetInstaInfluencer,handlesetInfluencer,handlegetAllInfluencer,handlAdminSignup,
-  handleGetengagementrate,handleGetfollowerSize,handleGetfiltercost,handleUpdateInfluencer} = require('../controllers/adminUser')
+  handleGetengagementrate,handleGetfollowerSize,handleGetfiltercost,handleUpdateInfluencer,handleDeleteInfluencer} = require('../controllers/adminUser')
 const multer = require("multer");
 
 router.get("/allUsers", handleGetAllusers)
@@ -41,5 +41,5 @@ const uploadMiddleware = (req, res, next) => {
 router.post("/influencerForm",uploadMiddleware,handlesetInfluencer)
 router.get("/allInfluencer",handlegetAllInfluencer)
 router.put("/api/influencer/:id", handleUpdateInfluencer);
-
+router.delete("/deleteInfluencer/:id", handleDeleteInfluencer); 
 module.exports=router;

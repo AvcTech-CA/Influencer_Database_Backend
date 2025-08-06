@@ -326,5 +326,28 @@ async function handleUpdateInfluencer(req, res) {
   }
 }
 
+
+// DELETE Influencer by ID
+async function handleDeleteInfluencer(req, res) {
+  try {
+    const { id } = req.params;
+
+    const deletedInfluencer = await influencerData.findByIdAndDelete(id);
+
+    if (!deletedInfluencer) {
+      return res.status(404).json({ message: "Influencer not found" });
+    }
+
+    res.status(200).json({
+      message: "Influencer deleted successfully",
+      data: deletedInfluencer
+    });
+  } catch (error) {
+    console.error("Error deleting influencer:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+}
+
+
 module.exports={handleGetAllusers, handleUserLogin,handlegetInstaInfluencer,handlesetInfluencer,handlegetAllInfluencer
-  ,handlAdminSignup,handleGetengagementrate,handleGetfollowerSize,handleGetfiltercost,handleUpdateInfluencer};
+  ,handlAdminSignup,handleGetengagementrate,handleGetfollowerSize,handleGetfiltercost,handleUpdateInfluencer,handleDeleteInfluencer};
