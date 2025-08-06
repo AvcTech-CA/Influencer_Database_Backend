@@ -284,6 +284,47 @@ async function handleGetfiltercost(req, res) {
     }
 }
 
+// UPDATE Influencer by ID
+async function handleUpdateInfluencer(req, res) {
+  try {
+    const { id } = req.params;
+    const updatedData = req.body;
+
+    // Normalize arrays (if they come as strings)
+    const normalizeArray = (input) =>
+      typeof input === "string"
+        ? input.split(",").map((item) => item.trim()).filter(Boolean)
+        : Array.isArray(input)
+        ? input
+        : [];
+
+    const updatedInfluencer = await influencerData.findByIdAndUpdate(
+      id,
+      {
+        ...updatedData,
+        SocialMediaPlatformLinks: normalizeArray(updatedData.SocialMediaPlatformLinks),
+        InternalNotes: normalizeArray(updatedData.InternalNotes),
+        NameofPastProjects: normalizeArray(updatedData.NameofPastProjects),
+        DeliverablesforPastProjects: normalizeArray(updatedData.DeliverablesforPastProjects),
+        OtherBrandsWorkedWith: normalizeArray(updatedData.OtherBrandsWorkedWith),
+        ContentSampleLinks: normalizeArray(updatedData.ContentSampleLinks),
+      },
+      { new: true }
+    );
+
+    if (!updatedInfluencer) {
+      return res.status(404).json({ message: "Influencer not found" });
+    }
+
+    res.status(200).json({
+      message: "Influencer updated successfully",
+      data: updatedInfluencer,
+    });
+  } catch (error) {
+    console.error("Error updating influencer:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+}
 
 module.exports={handleGetAllusers, handleUserLogin,handlegetInstaInfluencer,handlesetInfluencer,handlegetAllInfluencer
-  ,handlAdminSignup,handleGetengagementrate,handleGetfollowerSize,handleGetfiltercost};
+  ,handlAdminSignup,handleGetengagementrate,handleGetfollowerSize,handleGetfiltercost,handleUpdateInfluencer};
